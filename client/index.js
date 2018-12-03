@@ -1,5 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import { Provider } from 'react-redux';
 
-ReactDOM.hydrate(<App />, document.getElementById('root'));
+import store from './store';
+
+import Layout from './containers/Layout';
+
+ReactDOM.render(
+  <Provider store={store}>
+    <Layout />
+  </Provider>,
+  document.getElementById('root'),
+);
