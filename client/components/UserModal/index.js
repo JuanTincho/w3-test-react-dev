@@ -12,14 +12,17 @@ import renderTextField from '../../utils/fieldRenderers';
 import SelectCountry from '../SelectCountry';
 
 const styles = theme => ({
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   paper: {
-    position: 'absolute',
     width: theme.spacing.unit * 50,
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing.unit * 4,
-    top: 50,
-    left: 50,
+    margin: 'auto',
   },
 });
 
@@ -64,7 +67,7 @@ class UserModal extends React.PureComponent {
     } = this.props;
 
     return (
-      <Modal open={isModalOpen} className="blocks-modal" onClose={onCancelAndCloseModal}>
+      <Modal open={isModalOpen} className={classes.modal} onClose={onCancelAndCloseModal}>
         <form className={classes.paper} onSubmit={handleSubmit}>
           <Typography variant="h4">{`${title} persona`}</Typography>
 
