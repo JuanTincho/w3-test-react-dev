@@ -3,12 +3,10 @@
  */
 
 import { combineReducers } from 'redux-immutable';
+import { reducer as formReducer } from 'redux-form/immutable';
 
 import homeReducer from './components/Home/reducer';
 
-/**
- * Creates the main reducer with the dynamically injected ones
- */
-const reducers = combineReducers({ home: homeReducer });
+const reducers = combineReducers({ home: homeReducer, form: formReducer });
 
 export default reducers;

@@ -1,6 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, TextField, withStyles } from '@material-ui/core';
+import { compose } from 'redux';
+
+import { Field, reduxForm } from 'redux-form/immutable';
+import {
+  Button, Modal, Typography, withStyles,
+} from '@material-ui/core';
+import renderTextField from '../../utils/fieldRenderers';
 
 import SelectCountry from '../SelectCountry';
 
@@ -16,6 +22,23 @@ const styles = theme => ({
   },
 });
 
+const validate = (values) => {
+  const errors = {};
+  const requiredFields = ['firstname', 'lastname', 'email', 'birthdate', 'country', 'phone'];
+  requiredFields.forEach((field) => {
+    if (!values.get(field)) {
+      errors[field] = 'Requerido';
+    }
+  });
+  if (
+    values.get('email')
+    && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.get('email'))
+  ) {
+    errors.email = 'Email inválido';
+  }
+  return errors;
+};
+
 class UserModal extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -23,22 +46,60 @@ class UserModal extends React.PureComponent {
   }
 
   render() {
-    const { isModalOpen, onCancelAndCloseModal, classes } = this.props;
+    const {
+      isModalOpen,
+      onCancelAndCloseModal,
+      classes,
+      handleSubmit,
+      pristine,
+      reset,
+      submitting,
+      title,
+    } = this.props;
 
     return (
       <Modal open={isModalOpen} className="blocks-modal" onClose={onCancelAndCloseModal}>
-        <div className={classes.paper}>
+        <form className={classes.paper} onSubmit={handleSubmit}>
+          <Typography variant="h4">{`${title} persona`}</Typography>
+
           <div>
-            <TextField onChange={this.onChangeTextField} />
+            <Field name="firstname" component={renderTextField} label="Nombre" />
           </div>
           <div>
-            <TextField onChange={this.onChangeTextField} />
+            <Field name="lastname" component={renderTextField} label="Apellido" />
           </div>
           <div>
-            <TextField onChange={this.onChangeTextField} />
+            <Field name="email" component={renderTextField} label="Email" />
+          </div>
+          <div>
+            <Field
+              name="birthdate"
+              type="date"
+              component={renderTextField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              label="Fecha de nacimiento"
+            />
+          </div>
+          <div>
+            <Field name="phone" component={renderTextField} label="Teléfono" type="number" />
           </div>
           <SelectCountry />
-        </div>
+          <div>
+            <Button type="submit" disabled={pristine || submitting} color="primary">
+              {title}
+            </Button>
+            <Button
+              type="button"
+              disabled={pristine || submitting}
+              onClick={reset}
+              color="secondary"
+            >
+              Desestimar cambios
+            </Button>
+          </div>
+        </form>
       </Modal>
     );
   }
@@ -47,6 +108,23 @@ class UserModal extends React.PureComponent {
 UserModal.propTypes = {
   isModalOpen: PropTypes.bool.isRequired,
   onCancelAndCloseModal: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  classes: PropTypes.object.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  pristine: PropTypes.bool.isRequired,
+  reset: PropTypes.func.isRequired,
+  submitting: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(UserModal);
+const createReduxForm = reduxForm({
+  form: 'UserForm',
+  validate,
+});
+
+const addStyles = withStyles(styles);
+
+export default compose(
+  createReduxForm,
+  addStyles,
+)(UserModal);

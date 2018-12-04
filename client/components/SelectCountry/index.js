@@ -8,34 +8,34 @@ import { compose } from 'redux';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import TextField from '@material-ui/core/TextField';
+import { Field } from 'redux-form/immutable';
+
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
+import renderTextField from '../../utils/fieldRenderers';
 
 import { selectCountries } from '../Home/selectors';
 
-function renderInputComponent(inputProps) {
-  const {
-    classes, inputRef = () => {}, ref, ...other
-  } = inputProps;
-
-  return (
-    <TextField
-      fullWidth
-      InputProps={{
-        inputRef: (node) => {
-          ref(node);
-          inputRef(node);
-        },
-        classes: {
-          input: classes.input,
-        },
-      }}
-      {...other}
-    />
-  );
-}
+const renderInputComponent = ({
+  classes, inputRef = () => {}, ref, ...other
+}) => (
+  <Field
+    name="country"
+    component={renderTextField}
+    label="País"
+    InputProps={{
+      inputRef: (node) => {
+        ref(node);
+        inputRef(node);
+      },
+      classes: {
+        input: classes.input,
+      },
+    }}
+    {...other}
+  />
+);
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   const matches = match(suggestion.name, query);
@@ -150,7 +150,6 @@ class SelectCountry extends React.Component {
           {...autosuggestProps}
           inputProps={{
             classes,
-            placeholder: 'Search a country (start with a)',
             value: single,
             onChange: this.handleChange('single'),
           }}
