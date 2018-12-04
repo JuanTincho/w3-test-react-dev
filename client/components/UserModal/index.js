@@ -91,7 +91,9 @@ class UserModal extends React.PureComponent {
           <div>
             <Field name="phone" component={renderTextField} label="Teléfono" />
           </div>
-          <SelectCountry />
+          <div>
+            <Field name="country" component={SelectCountry} label="País" />
+          </div>
           <div>
             <Button type="submit" disabled={pristine || submitting} color="primary">
               {title}

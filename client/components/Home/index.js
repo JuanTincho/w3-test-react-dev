@@ -50,6 +50,13 @@ class Home extends Component {
   };
 
   handleEdit = (user) => {
+    const date = new Date(user.birthdate);
+    // eslint-disable-next-line no-param-reassign
+    user = {
+      ...user,
+      birthdate: date.toISOString().substr(0, 10),
+    };
+
     this.setState({
       isModalOpen: true,
       initialValues: user,

@@ -8,22 +8,26 @@ import { compose } from 'redux';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import { Field } from 'redux-form/immutable';
+import { TextField } from '@material-ui/core';
 
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
-import renderTextField from '../../utils/fieldRenderers';
 
 import { selectCountries } from '../Home/selectors';
 
 const renderInputComponent = ({
-  classes, inputRef = () => {}, ref, ...other
+  classes,
+  inputRef = () => {},
+  ref,
+  label,
+  meta: { touched, error },
+  ...other
 }) => (
-  <Field
-    name="country"
-    component={renderTextField}
-    label="País"
+  <TextField
+    fullWidth
+    label={error && touched ? error : label}
+    error={touched && (error && error.length > 0)}
     InputProps={{
       inputRef: (node) => {
         ref(node);
@@ -90,7 +94,6 @@ const styles = theme => ({
 
 class SelectCountry extends React.Component {
   state = {
-    single: '',
     suggestions: [],
   };
 
@@ -106,10 +109,9 @@ class SelectCountry extends React.Component {
     });
   };
 
-  handleChange = name => (event, { newValue }) => {
-    this.setState({
-      [name]: newValue,
-    });
+  handleChange = () => (event, { newValue }) => {
+    const { input } = this.props;
+    input.onChange(newValue);
   };
 
   getSuggestions = (value) => {
@@ -132,8 +134,10 @@ class SelectCountry extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { suggestions, single } = this.state;
+    const {
+      classes, meta, input, label,
+    } = this.props;
+    const { suggestions } = this.state;
 
     const autosuggestProps = {
       renderInputComponent,
@@ -150,8 +154,10 @@ class SelectCountry extends React.Component {
           {...autosuggestProps}
           inputProps={{
             classes,
-            value: single,
-            onChange: this.handleChange('single'),
+            label,
+            ...input,
+            meta,
+            onChange: this.handleChange(),
           }}
           theme={{
             container: classes.container,
