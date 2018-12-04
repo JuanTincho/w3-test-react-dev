@@ -2,16 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Grid,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableSortLabel,
-  Tooltip,
-  Typography,
+  TableHead, TableRow, TableCell, Typography,
 } from '@material-ui/core';
 
-import { ArrowDropDown, LensOutlined } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 
 const columns = [
@@ -55,11 +48,7 @@ class TableHeadComponent extends Component {
       <TableHead>
         <TableRow>
           {columns.map(column => (
-            <TableCell
-              key={column.id}
-              numeric={column.numeric}
-              className={classes.sticky}
-            >
+            <TableCell key={column.id} numeric={column.numeric} className={classes.sticky}>
               {this.createHeadName(column)}
             </TableCell>
           ))}

@@ -6,26 +6,26 @@ import {
 
 import Home from '../../components/Home';
 
-const styles = theme => ({
+const styles = {
   root: {
     flexGrow: 1,
   },
-  tabs: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+  appBar: {
+    marginBottom: '2rem',
   },
-  tab: {
-    textTransform: 'initial',
+  headerText: {
+    textAlign: 'center',
+    color: '#FFF',
   },
-});
+};
 
 const Layout = ({ classes }) => (
   <div className={classes.root}>
     <Grid container spacing={24}>
       <Grid item xs={12}>
         <div className={classes.tabs}>
-          <AppBar position="static" style={{ marginBottom: '2rem' }}>
-            <Typography variant="h4" style={{ textAlign: 'center' }}>
+          <AppBar position="static" className={classes.appBar}>
+            <Typography variant="h4" className={classes.headerText}>
               W3 - React Test
             </Typography>
           </AppBar>
