@@ -41,11 +41,6 @@ const styles = () => ({
 });
 
 class TableHeadComponent extends Component {
-  createSortHandler = (e, property) => {
-    const { onRequestSort } = this.props;
-    onRequestSort(e, property);
-  };
-
   createHeadName = (column) => {
     if (column.id !== 'action') {
       return <Typography>{column.label}</Typography>;
@@ -63,7 +58,6 @@ class TableHeadComponent extends Component {
             <TableCell
               key={column.id}
               numeric={column.numeric}
-              padding={column.disablePadding ? 'none' : 'default'}
               className={classes.sticky}
             >
               {this.createHeadName(column)}

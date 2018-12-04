@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Table, withStyles } from '@material-ui/core';
+import { Table } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
@@ -10,6 +10,8 @@ import TableHeadComponent from '../TableHeadComponent';
 import TableBodyComponent from '../TableBodyComponent';
 import ToolbarComponent from '../ToolbarComponent';
 import UserModal from '../UserModal';
+
+import { addUser, editUser, deleteUser } from '../../services/api';
 
 import { fetchCountries, fetchUsers } from './actions';
 import { selectUsers, selectIsUsersLoading, selectCountries } from './selectors';
@@ -20,6 +22,9 @@ class Home extends Component {
 
     this.state = {
       isModalOpen: false,
+      query: '',
+      initialValues: {},
+      title: '',
     };
   }
 
@@ -30,12 +35,30 @@ class Home extends Component {
   }
 
   handleDelete = (id) => {
-    console.log(`Delete${id}`);
+    const { dispatch } = this.props;
+
+    deleteUser(id)
+      .then(() => {
+        dispatch(fetchUsers());
+      })
+      .catch((error) => {
+        alert(error);
+      });
   };
 
-  handleEdit = (id) => {
+  handleEdit = (user) => {
     this.setState({
       isModalOpen: true,
+      initialValues: user,
+      title: 'Editar',
+    });
+  };
+
+  handleCreateUser = () => {
+    this.setState({
+      isModalOpen: true,
+      initialValues: {},
+      title: 'Añadir',
     });
   };
 
@@ -43,24 +66,64 @@ class Home extends Component {
     this.setState({ query: event.target.value });
   };
 
-  searchQuery = (data, query) => data;
+  handleSubmit = (values) => {
+    const { dispatch } = this.props;
+    const user = {};
+    values.forEach((v, k) => {
+      user[k] = v;
+    });
+
+    if (user.id) {
+      editUser(user)
+        .then(() => {
+          dispatch(fetchUsers());
+          this.cancelAndCloseModal();
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    } else {
+      addUser(user)
+        .then(() => {
+          dispatch(fetchUsers());
+          this.cancelAndCloseModal();
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+  };
+
+  searchQuery = (data, query) => {
+    if (query.trim() !== '') {
+      return data.filter(user => user.firstname
+        .toString()
+        .toLowerCase()
+        .includes(query.toLowerCase()));
+    }
+    return data;
+  };
 
   cancelAndCloseModal = (event) => {
-    if (event.which === 27) {
+    if (event && event.which === 27) {
       return;
     }
     this.setState({ isModalOpen: false });
   };
 
   render() {
-    const { classes, users: data, countries } = this.props;
-    const { isModalOpen } = this.state;
-
-    const updatedData = data;
+    const { users: data, countries } = this.props;
+    const {
+      isModalOpen, query, initialValues, title,
+    } = this.state;
+    const updatedData = this.searchQuery(data, query);
 
     return (
       <>
-        <ToolbarComponent handleSearchChange={this.handleSearchChange} />
+        <ToolbarComponent
+          handleSearchChange={this.handleSearchChange}
+          handleCreateUser={this.handleCreateUser}
+        />
         <Table>
           <TableHeadComponent />
           <TableBodyComponent
@@ -72,9 +135,13 @@ class Home extends Component {
         {isModalOpen && (
           <UserModal
             isModalOpen={isModalOpen}
+            title={title}
             onCancelAndCloseModal={this.cancelAndCloseModal}
             onClick={this.onSave}
             countries={countries}
+            initialValues={initialValues}
+            enableReinitialize
+            onSubmit={this.handleSubmit}
           />
         )}
         {/* <Notifier /> */}
@@ -84,10 +151,9 @@ class Home extends Component {
 }
 
 Home.propTypes = {
-  classes: PropTypes.shape(PropTypes.object),
-  users: PropTypes.arrayOf(PropTypes.object).isRequired,
+  users: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
   isUsersLoading: PropTypes.bool.isRequired,
-  countries: PropTypes.array,
+  countries: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 

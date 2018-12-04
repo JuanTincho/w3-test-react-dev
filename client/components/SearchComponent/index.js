@@ -17,7 +17,7 @@ const SearchComponent = ({ classes, handleSearchChange }) => (
       id="input-with-icon-adornment"
       type="search"
       className={classes.input}
-      placeholder="Search users"
+      placeholder="Buscar usuario"
       onChange={event => handleSearchChange(event)}
       startAdornment={(
         <InputAdornment position="start">
