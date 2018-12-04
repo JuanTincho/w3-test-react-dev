@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
+import { parsePhoneNumber } from 'libphonenumber-js';
 
 import { Field, reduxForm } from 'redux-form/immutable';
 import {
@@ -35,6 +36,11 @@ const validate = (values) => {
     && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.get('email'))
   ) {
     errors.email = 'Email inválido';
+  }
+  try {
+    parsePhoneNumber(values.get('phone'));
+  } catch (error) {
+    errors.phone = 'Teléfono inválido';
   }
   return errors;
 };
@@ -83,7 +89,7 @@ class UserModal extends React.PureComponent {
             />
           </div>
           <div>
-            <Field name="phone" component={renderTextField} label="Teléfono" type="number" />
+            <Field name="phone" component={renderTextField} label="Teléfono" />
           </div>
           <SelectCountry />
           <div>
