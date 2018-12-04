@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Table } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
+
+import { Table } from '@material-ui/core';
 
 import TableHeadComponent from '../TableHeadComponent';
 import TableBodyComponent from '../TableBodyComponent';
 import ToolbarComponent from '../ToolbarComponent';
 import UserModal from '../UserModal';
+import Notifier, { openSnackBar } from '../Notifier';
 
 import { addUser, editUser, deleteUser } from '../../services/api';
 
@@ -40,6 +42,7 @@ class Home extends Component {
     deleteUser(id)
       .then(() => {
         dispatch(fetchUsers());
+        openSnackBar('Usuario eliminado con éxito!');
       })
       .catch((error) => {
         alert(error);
@@ -78,6 +81,7 @@ class Home extends Component {
         .then(() => {
           dispatch(fetchUsers());
           this.cancelAndCloseModal();
+          openSnackBar('Usuario editado con éxito!');
         })
         .catch((error) => {
           alert(error);
@@ -87,6 +91,7 @@ class Home extends Component {
         .then(() => {
           dispatch(fetchUsers());
           this.cancelAndCloseModal();
+          openSnackBar('Usuario creado con éxito!');
         })
         .catch((error) => {
           alert(error);
@@ -144,7 +149,7 @@ class Home extends Component {
             onSubmit={this.handleSubmit}
           />
         )}
-        {/* <Notifier /> */}
+        <Notifier />
       </>
     );
   }
@@ -152,7 +157,6 @@ class Home extends Component {
 
 Home.propTypes = {
   users: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
-  isUsersLoading: PropTypes.bool.isRequired,
   countries: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
   dispatch: PropTypes.func.isRequired,
 };
